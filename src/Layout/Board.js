@@ -33,7 +33,7 @@ const Board = ({ cols, rows, mines }) => {
     [grid]
   );
 
-  const handleUncoverCell = (pos) => {
+  const placeHints = (pos) => {
     if (grid[pos[0]][pos[1]] !== true) {
       let countBombs = 0;
       /* Checks above */
@@ -79,18 +79,18 @@ const Board = ({ cols, rows, mines }) => {
 
   useEffect(() => {
     placeMines(cols, rows, mines);
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        placeHints([i, j]);
+      }
+    }
+    console.table(grid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cols, mines, rows]);
 
   return (
     <div style={style}>
-      {grid.map((c, x) =>
-        c.map((r, y) => (
-          <Cell key={`${x}${y}`} pos={[x, y]} onUncoverCell={handleUncoverCell}>
-            {r}
-          </Cell>
-        ))
-      )}
+      {grid.map((c, x) => c.map((r, y) => <Cell key={`${x}${y}`}>{r}</Cell>))}
     </div>
   );
 };

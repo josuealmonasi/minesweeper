@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBomb } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 
-const Cell = ({ children, onUncoverCell, pos }) => {
+const Cell = ({ children }) => {
   const [style, setstyle] = useState({
     border: 'solid 1px grey',
     borderRadius: '5px',
@@ -14,17 +14,19 @@ const Cell = ({ children, onUncoverCell, pos }) => {
     cursor: 'pointer'
   });
 
-  const [state, setState] = useState(<></>);
+  const [state, setState] = useState(null);
 
   useEffect(() => {
-    setState(children);
+    setState(null);
   }, [children]);
 
   const handleClick = (c) => {
     console.log(children);
-    onUncoverCell(pos);
     setState(c === true ? <FontAwesomeIcon icon={faBomb} /> : children);
-    setstyle({ ...style, background: '#b9d8ff' });
+    setstyle({
+      ...style,
+      background: children >= 2 ? '#ff6b8b' : children === 1 ? '#ffc5d2' : '#b9d8ff'
+    });
     if (children === true) {
       setstyle({ ...style, background: 'red' });
     }
