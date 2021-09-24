@@ -79,6 +79,7 @@ const Board = ({ cols, rows, mines }) => {
 
   useEffect(() => {
     placeMines(cols, rows, mines);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cols, mines, rows]);
 
   return (
