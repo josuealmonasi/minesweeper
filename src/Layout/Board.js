@@ -24,16 +24,58 @@ const Board = ({ cols, rows, mines }) => {
         let randRow = Math.floor(Math.random() * rows);
         if (!grid[randCol][randRow]) {
           const temp = [...grid];
-          temp[randCol][randRow] = '*';
-          console.log('object');
+          temp[randCol][randRow] = true;
           setGrid(temp);
           count += 1;
         }
       }
-      console.table(grid);
     },
     [grid]
   );
+
+  const handleUncoverCell = (pos) => {
+    if (grid[pos[0]][pos[1]] !== true) {
+      let countBombs = 0;
+      /* Checks above */
+      if (grid[pos[0] - 1]?.[pos[1]] === true) {
+        countBombs += 1;
+      }
+      /* Checks below */
+      if (grid[pos[0] + 1]?.[pos[1]] === true) {
+        countBombs += 1;
+      }
+      /* Checks left */
+      if (grid[pos[0]]?.[pos[1] - 1] === true) {
+        countBombs += 1;
+      }
+      /* Checks right */
+      if (grid[pos[0]]?.[pos[1] + 1] === true) {
+        countBombs += 1;
+      }
+      /* Checks above-left */
+      if (grid[pos[0] - 1]?.[pos[1] - 1] === true) {
+        countBombs += 1;
+      }
+      /* Checks below-left */
+      if (grid[pos[0] + 1]?.[pos[1] - 1] === true) {
+        countBombs += 1;
+      }
+      /* Checks above-right */
+      if (grid[pos[0] - 1]?.[pos[1] + 1] === true) {
+        countBombs += 1;
+      }
+      /* Checks below-right */
+      if (grid[pos[0] + 1]?.[pos[1] + 1] === true) {
+        countBombs += 1;
+      }
+      if (countBombs === 0) {
+        return;
+      }
+      const temp = [...grid];
+      temp[pos[0]][pos[1]] = countBombs;
+      setGrid(temp);
+    }
+  };
 
   useEffect(() => {
     placeMines(cols, rows, mines);
@@ -41,8 +83,12 @@ const Board = ({ cols, rows, mines }) => {
 
   return (
     <div style={style}>
-      {grid.map((c) =>
-        React.Children.toArray(c.map((r) => React.Children.toArray(<Cell>{r}</Cell>)))
+      {grid.map((c, x) =>
+        c.map((r, y) => (
+          <Cell key={`${x}${y}`} pos={[x, y]} onUncoverCell={handleUncoverCell}>
+            {r}
+          </Cell>
+        ))
       )}
     </div>
   );
