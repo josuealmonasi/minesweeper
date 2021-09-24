@@ -12,7 +12,7 @@ const Board = ({ cols, rows, mines }) => {
   const createGrid = (cols, rows) =>
     Array(cols)
       .fill(null)
-      .map(() => Array(rows).fill(false));
+      .map(() => Array(rows).fill({ ...{ bomb: false, hint: 0 } }));
 
   const [grid, setGrid] = useState(createGrid(cols, rows));
 
@@ -22,9 +22,9 @@ const Board = ({ cols, rows, mines }) => {
       while (mines > count) {
         let randCol = Math.floor(Math.random() * cols);
         let randRow = Math.floor(Math.random() * rows);
-        if (!grid[randCol][randRow]) {
+        if (!grid[randCol][randRow].bomb) {
           const temp = [...grid];
-          temp[randCol][randRow] = true;
+          temp[randCol][randRow] = { bomb: true, hint: 0 };
           setGrid(temp);
           count += 1;
         }
@@ -34,45 +34,45 @@ const Board = ({ cols, rows, mines }) => {
   );
 
   const placeHints = (pos) => {
-    if (grid[pos[0]][pos[1]] !== true) {
+    if (!grid[pos[0]][pos[1]].bomb) {
       let countBombs = 0;
       /* Checks above */
-      if (grid[pos[0] - 1]?.[pos[1]] === true) {
+      if (grid[pos[0] - 1]?.[pos[1]]?.bomb) {
         countBombs += 1;
       }
       /* Checks below */
-      if (grid[pos[0] + 1]?.[pos[1]] === true) {
+      if (grid[pos[0] + 1]?.[pos[1]]?.bomb) {
         countBombs += 1;
       }
       /* Checks left */
-      if (grid[pos[0]]?.[pos[1] - 1] === true) {
+      if (grid[pos[0]]?.[pos[1] - 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks right */
-      if (grid[pos[0]]?.[pos[1] + 1] === true) {
+      if (grid[pos[0]]?.[pos[1] + 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks above-left */
-      if (grid[pos[0] - 1]?.[pos[1] - 1] === true) {
+      if (grid[pos[0] - 1]?.[pos[1] - 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks below-left */
-      if (grid[pos[0] + 1]?.[pos[1] - 1] === true) {
+      if (grid[pos[0] + 1]?.[pos[1] - 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks above-right */
-      if (grid[pos[0] - 1]?.[pos[1] + 1] === true) {
+      if (grid[pos[0] - 1]?.[pos[1] + 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks below-right */
-      if (grid[pos[0] + 1]?.[pos[1] + 1] === true) {
+      if (grid[pos[0] + 1]?.[pos[1] + 1]?.bomb) {
         countBombs += 1;
       }
       if (countBombs === 0) {
         return;
       }
       const temp = [...grid];
-      temp[pos[0]][pos[1]] = countBombs;
+      temp[pos[0]][pos[1]] = { bomb: false, hint: countBombs };
       setGrid(temp);
     }
   };
@@ -84,7 +84,7 @@ const Board = ({ cols, rows, mines }) => {
         placeHints([i, j]);
       }
     }
-    console.table(grid);
+    console.log(grid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cols, mines, rows]);
 
