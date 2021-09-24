@@ -23,7 +23,7 @@ const Board = ({ cols, rows, mines }) => {
         let randCol = Math.floor(Math.random() * cols);
         let randRow = Math.floor(Math.random() * rows);
         if (!grid[randCol][randRow].bomb) {
-          const temp = [...grid];
+          let temp = [...grid];
           temp[randCol][randRow] = { bomb: true, hint: 0 };
           setGrid(temp);
           count += 1;
@@ -33,58 +33,59 @@ const Board = ({ cols, rows, mines }) => {
     [grid]
   );
 
-  const placeHints = (pos) => {
-    if (!grid[pos[0]][pos[1]].bomb) {
-      let countBombs = 0;
+  const placeHints = (x, y) => {
+    const xy = { x, y };
+    let temp = [...grid];
+    let countBombs = 0;
+
+    if (!grid[x][y].bomb) {
       /* Checks above */
-      if (grid[pos[0] - 1]?.[pos[1]]?.bomb) {
+      if (grid[x - 1]?.[y]?.bomb) {
         countBombs += 1;
       }
       /* Checks below */
-      if (grid[pos[0] + 1]?.[pos[1]]?.bomb) {
+      if (grid[x + 1]?.[y]?.bomb) {
         countBombs += 1;
       }
       /* Checks left */
-      if (grid[pos[0]]?.[pos[1] - 1]?.bomb) {
+      if (grid[x]?.[y - 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks right */
-      if (grid[pos[0]]?.[pos[1] + 1]?.bomb) {
+      if (grid[x]?.[y + 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks above-left */
-      if (grid[pos[0] - 1]?.[pos[1] - 1]?.bomb) {
+      if (grid[x - 1]?.[y - 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks below-left */
-      if (grid[pos[0] + 1]?.[pos[1] - 1]?.bomb) {
+      if (grid[x + 1]?.[y - 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks above-right */
-      if (grid[pos[0] - 1]?.[pos[1] + 1]?.bomb) {
+      if (grid[x - 1]?.[y + 1]?.bomb) {
         countBombs += 1;
       }
       /* Checks below-right */
-      if (grid[pos[0] + 1]?.[pos[1] + 1]?.bomb) {
+      if (grid[x + 1]?.[y + 1]?.bomb) {
         countBombs += 1;
       }
       if (countBombs === 0) {
         return;
       }
-      const temp = [...grid];
-      temp[pos[0]][pos[1]] = { bomb: false, hint: countBombs };
-      setGrid(temp);
     }
+    temp[x][y] = { bomb: grid[x][y].bomb, hint: countBombs, clicked: false, ...xy };
+    setGrid(temp);
   };
 
   useEffect(() => {
     placeMines(cols, rows, mines);
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid[i].length; j++) {
-        placeHints([i, j]);
+        placeHints(i, j);
       }
     }
-    console.log(grid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cols, mines, rows]);
 
